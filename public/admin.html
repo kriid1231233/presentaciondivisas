@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrar Multimedia</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="admin-wrapper">
+    <header class="admin-header">
+      <h1>Administrar Multimedia</h1>
+    </header>
+
+    <section class="admin-upload">
+      <label class="file-label">
+        <span class="file-label-text">Seleccionar imágenes o videos</span>
+        <input type="file" id="file-input" accept="image/*,video/*" multiple>
+      </label>
+      <button id="upload-btn" class="btn-primary">Subir archivos</button>
+    </section>
+
+    <section class="admin-list">
+      <h2>Archivos cargados</h2>
+      <div class="media-list" id="media-list"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

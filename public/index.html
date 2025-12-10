@@ -1,0 +1,62 @@
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presentación Divisas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- Contenedor general -->
+  <div class="presentacion-layout">
+
+    <!-- Presentación Multimedia -->
+    <div class="presentacion-container">
+      <div class="media-player" id="media-player">
+        <img id="media-img" class="media-active" style="display:none;">
+        <video id="media-video" class="media-active" style="display:none;" controls loop muted></video>
+      </div>
+
+      <!-- Overlay inferior: logo + divisas -->
+      <div class="divisas-overlay">
+        <div class="divisas-izquierda">
+          <img src="img/logo2023.png" alt="Logo Empresa" class="logo-img">
+
+          <div class="divisas-panel">
+            <div class="divisa-card" id="dolar">
+              <span class="divisa-label">Dólar</span>
+              <span class="divisa-valor" id="dolar-valor">-</span>
+              <span class="divisa-cambio" id="dolar-cambio">0.00</span>
+            </div>
+
+            <div class="divisa-card" id="utm">
+              <span class="divisa-label">UTM</span>
+              <span class="divisa-valor" id="utm-valor">-</span>
+              <span class="divisa-cambio" id="utm-cambio">0.00</span>
+            </div>
+
+            <div class="divisa-card" id="uf">
+              <span class="divisa-label">UF</span>
+              <span class="divisa-valor" id="uf-valor">-</span>
+              <span class="divisa-cambio" id="uf-cambio">0.00</span>
+            </div>
+
+            <div class="divisa-card">
+              <span class="divisa-label">Fecha / Hora</span>
+              <span class="divisa-valor" id="ultima-update">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Si tienes controles de presentación, ponlos aquí -->
+        <div class="controles-presentacion">
+          <!-- botones opcionales -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

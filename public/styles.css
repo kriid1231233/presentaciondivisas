@@ -1,0 +1,171 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Colores corporativos: negro, blanco, #01E2A8 */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #000;
+  min-height: 100vh;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Contenedor general: media + overlay */
+.presentacion-layout {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* La imagen ocupa toda la pantalla */
+.presentacion-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.media-player {
+  width: 100%;
+  height: 100%;
+  max-width: 1700px;
+  max-height: 900px;
+  margin: 0 auto;
+  border-radius: 0;                 /* opcional: sin bordes para full-screen */
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-active {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.7s ease-in-out;
+}
+
+.media-visible {
+  opacity: 1;
+}
+
+/* ===== Overlay de divisas + logo SOBRE la imagen ===== */
+
+.divisas-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 22vh;                    /* ≈ menos de 1/4 de pantalla */
+  min-height: 120px;
+  background: rgba(87, 188, 144, 0.94); /* #57bc90 con algo de transparencia */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 40px;
+  gap: 40px;
+  box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.7);
+  z-index: 5;
+}
+
+.divisas-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+/* Logo grande */
+.logo-img {
+  height: 90px;
+  width: auto;
+  object-fit: contain;
+}
+
+.divisas-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 18px;
+}
+
+/* Tarjetas */
+.divisa-card {
+  min-width: 150px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.divisa-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #e0e0e0;
+}
+
+.divisa-valor {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.divisa-cambio {
+  font-size: 11px;
+  margin-top: 4px;
+  color: #01E2A8;
+}
+
+.ultima-actualizacion {
+  font-size: 11px;
+  color: #f0f0f0;
+  margin-left: 10px;
+}
+
+/* Controles a la derecha */
+.controles-presentacion {
+  display: flex;
+  gap: 10px;
+}
+
+.controles-presentacion button {
+  padding: 8px 18px;
+  font-size: 14px;
+  border-radius: 999px;
+  border: 1px solid #01E2A8;
+  background: #01E2A8;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.controles-presentacion button:hover {
+  background: #00c696;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .divisas-overlay {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 20px;
+    gap: 16px;
+  }
+  .divisas-izquierda {
+    flex-direction: column;
+  }
+  .logo-img {
+    height: 70px;
+  }
+}
