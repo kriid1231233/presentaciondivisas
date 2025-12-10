@@ -45,18 +45,229 @@ class DivisaPresentacion {
     this.mediaList     = document.getElementById('media-list');
     this.fileInput     = document.getElementById('file-input');
     this.uploadBtn     = document.getElementById('upload-btn');
+    this.cancelBtn     = document.getElementById('cancel-btn');
+    this.uploadZone    = document.getElementById('upload-zone');
+    this.progressContainer = document.getElementById('progress-container');
+    this.progressFill  = document.getElementById('progress-fill');
+    this.progressText  = document.getElementById('progress-text');
+    this.progressPercent = document.getElementById('progress-percent');
+    this.validationMsg = document.getElementById('validation-message');
+    this.fileSelectedContainer = document.getElementById('file-selected-container');
+    this.selectedFiles = document.getElementById('selected-files');
+    this.previewContainer = document.getElementById('preview-container');
+    this.fileCount     = document.getElementById('file-count');
+    this.lastUpdate    = document.getElementById('last-update');
+    this.emptyState    = document.getElementById('empty-state');
+
+    // Validación
+    this.ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm', 'video/x-msvideo'];
+    this.selectedFilesList = []; // guardar archivos seleccionados
   }
 
   bindEvents() {
-    // Solo en admin.html existen estos elementos
-    if (this.uploadBtn && this.fileInput) {
-      this.uploadBtn.onclick = () => this.uploadFiles();
-    }
-
     // Fullscreen personalizado (index.html)
     const btnFullscreen = document.getElementById('btn-fullscreen');
     if (btnFullscreen) {
       btnFullscreen.addEventListener('click', () => this.toggleFullscreen());
+    }
+
+    // Admin panel (admin.html)
+    if (this.uploadZone && this.fileInput) {
+      this.uploadZone.addEventListener('click', () => this.fileInput.click());
+      this.uploadZone.addEventListener('dragover', (e) => this.handleDragOver(e));
+      this.uploadZone.addEventListener('dragleave', (e) => this.handleDragLeave(e));
+      this.uploadZone.addEventListener('drop', (e) => this.handleDrop(e));
+    }
+
+    if (this.fileInput) {
+      this.fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+    }
+
+    if (this.uploadBtn) {
+      this.uploadBtn.addEventListener('click', () => this.uploadFiles());
+    }
+
+    if (this.cancelBtn) {
+      this.cancelBtn.addEventListener('click', () => this.cancelUpload());
+    }
+  }
+
+  // ===== MANEJO DE ARCHIVOS (DRAG & DROP) =====
+  handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.uploadZone) {
+      this.uploadZone.classList.add('dragover');
+    }
+  }
+
+  handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.uploadZone) {
+      this.uploadZone.classList.remove('dragover');
+    }
+  }
+
+  handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (this.uploadZone) {
+      this.uploadZone.classList.remove('dragover');
+    }
+    
+    const files = e.dataTransfer.files;
+    this.processFiles(files);
+  }
+
+  handleFileSelect(e) {
+    const files = e.target.files;
+    this.processFiles(files);
+  }
+
+  processFiles(files) {
+    this.selectedFilesList = [];
+    const errors = [];
+
+    Array.from(files).forEach((file, index) => {
+      const validation = this.validateFile(file);
+      if (validation.valid) {
+        this.selectedFilesList.push(file);
+      } else {
+        errors.push(`${file.name}: ${validation.error}`);
+      }
+    });
+
+    if (errors.length > 0) {
+      this.showValidationMessage(errors.join(' | '), 'error');
+    } else if (this.selectedFilesList.length > 0) {
+      this.showValidationMessage(`✓ ${this.selectedFilesList.length} archivo(s) seleccionado(s)`, 'success');
+    }
+
+    this.updateFilePreview();
+  }
+
+  validateFile(file) {
+    if (!this.ALLOWED_TYPES.includes(file.type)) {
+      return { valid: false, error: 'Tipo de archivo no permitido' };
+    }
+    return { valid: true };
+  }
+
+  updateFilePreview() {
+    if (this.selectedFilesList.length === 0) {
+      this.fileSelectedContainer.style.display = 'none';
+      return;
+    }
+
+    this.fileSelectedContainer.style.display = 'block';
+    this.selectedFiles.innerHTML = '';
+    this.previewContainer.innerHTML = '';
+
+    this.selectedFilesList.forEach((file, index) => {
+      // Mostrar nombre y tamaño
+      const fileDiv = document.createElement('div');
+      fileDiv.className = 'selected-file';
+      fileDiv.innerHTML = `
+        <span class="selected-file-name">${file.name}</span>
+        <span class="selected-file-size">${this.formatFileSize(file.size)}</span>
+        <button class="selected-file-remove" onclick="presentacion.removeFile(${index})">✕</button>
+      `;
+      this.selectedFiles.appendChild(fileDiv);
+
+      // Preview para imágenes
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'preview-item';
+          previewDiv.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+          this.previewContainer.appendChild(previewDiv);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  removeFile(index) {
+    this.selectedFilesList.splice(index, 1);
+    this.updateFilePreview();
+    if (this.selectedFilesList.length === 0) {
+      this.validationMsg.style.display = 'none';
+    }
+  }
+
+  cancelUpload() {
+    this.selectedFilesList = [];
+    if (this.fileInput) this.fileInput.value = '';
+    this.fileSelectedContainer.style.display = 'none';
+    this.validationMsg.style.display = 'none';
+    this.progressContainer.style.display = 'none';
+  }
+
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  showValidationMessage(message, type) {
+    if (!this.validationMsg) return;
+    this.validationMsg.className = `validation-message ${type}`;
+    this.validationMsg.textContent = message;
+    this.validationMsg.style.display = 'flex';
+  }
+
+  async uploadFiles(files = null) {
+    if (this.selectedFilesList.length === 0) {
+      if (!this.fileInput) return;
+      this.showValidationMessage('⚠️ Selecciona al menos un archivo', 'warning');
+      return;
+    }
+
+    this.progressContainer.style.display = 'block';
+    this.uploadBtn.disabled = true;
+
+    const formData = new FormData();
+    this.selectedFilesList.forEach(file => formData.append('files', file));
+
+    try {
+      const xhr = new XMLHttpRequest();
+
+      // Mostrar progreso
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          this.progressFill.style.width = percent + '%';
+          this.progressPercent.textContent = percent + '%';
+        }
+      });
+
+      xhr.addEventListener('load', async () => {
+        if (xhr.status === 200) {
+          this.showValidationMessage('✓ Archivos subidos exitosamente', 'success');
+          this.selectedFilesList = [];
+          this.cancelUpload();
+          await this.loadMedia();
+        } else {
+          this.showValidationMessage('✗ Error al subir archivos', 'error');
+        }
+        this.uploadBtn.disabled = false;
+      });
+
+      xhr.addEventListener('error', () => {
+        this.showValidationMessage('✗ Error de conexión', 'error');
+        this.uploadBtn.disabled = false;
+      });
+
+      xhr.open('POST', '/api/media');
+      xhr.send(formData);
+    } catch (error) {
+      console.error('Error subiendo:', error);
+      this.showValidationMessage('✗ Error al subir archivos', 'error');
+      this.uploadBtn.disabled = false;
     }
   }
 
@@ -115,14 +326,26 @@ class DivisaPresentacion {
 
     this.mediaList.innerHTML = '';
     this.mediaFiles.forEach((file, index) => {
+      const isVideo = /\.(mp4|webm|avi)$/i.test(file);
+      const fileType = isVideo ? 'VIDEO' : 'IMAGEN';
+      
       const item = document.createElement('div');
       item.className = 'media-item';
       item.innerHTML = `
         <span class="media-name">${file}</span>
+        <span class="media-type">${fileType}</span>
         <button class="delete-btn" data-index="${index}">Eliminar</button>
       `;
       this.mediaList.appendChild(item);
     });
+
+    // Actualizar estado
+    if (this.fileCount) {
+      this.fileCount.textContent = this.mediaFiles.length;
+    }
+    if (this.emptyState) {
+      this.emptyState.style.display = this.mediaFiles.length === 0 ? 'block' : 'none';
+    }
 
     // Enganchar botones de eliminar
     this.mediaList.querySelectorAll('.delete-btn').forEach(btn => {
@@ -307,7 +530,7 @@ class DivisaPresentacion {
   }
 
   updateFechaHora() {
-    if (!this.ultimaUpdate) return;
+    if (!this.ultimaUpdate && !this.lastUpdate) return;
 
     const ahora = new Date();
     const fechaStr = ahora.toLocaleDateString('es-CL', {
@@ -318,7 +541,15 @@ class DivisaPresentacion {
     });
     const horaStr = ahora.toLocaleTimeString('es-CL');
 
-    this.ultimaUpdate.textContent = `${fechaStr} - ${horaStr}`;
+    const timeString = `${fechaStr} - ${horaStr}`;
+    
+    if (this.ultimaUpdate) {
+      this.ultimaUpdate.textContent = timeString;
+    }
+    
+    if (this.lastUpdate) {
+      this.lastUpdate.textContent = timeString;
+    }
   }
 
   startDivisaUpdate() {

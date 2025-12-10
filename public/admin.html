@@ -3,27 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administrar Multimedia</title>
+  <title>Panel de Presentación - Administración</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <div class="admin-wrapper">
-    <header class="admin-header">
-      <h1>Administrar Multimedia</h1>
-    </header>
+  <div class="admin-container">
+    
+    <!-- Barra superior -->
+    <div class="admin-header">
+      <div class="header-content">
+        <img src="img/logo2023.png" alt="Logo" class="header-logo">
+        <h1 class="header-title">Panel de Presentación</h1>
+      </div>
+    </div>
 
-    <section class="admin-upload">
-      <label class="file-label">
-        <span class="file-label-text">Seleccionar imágenes o videos</span>
-        <input type="file" id="file-input" accept="image/*,video/*" multiple>
-      </label>
-      <button id="upload-btn" class="btn-primary">Subir archivos</button>
-    </section>
+    <!-- Contenido principal -->
+    <div class="admin-content">
+      
+      <!-- Tarjeta de subida -->
+      <div class="card upload-card">
+        <h2 class="card-title">Subir Multimedia</h2>
+        
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📁</div>
+          <h3>Arrastra archivos aquí o haz clic para seleccionar</h3>
+          <p class="upload-hint">Soportados: JPG, PNG, MP4, WebM, AVI</p>
+        </div>
 
-    <section class="admin-list">
-      <h2>Archivos cargados</h2>
-      <div class="media-list" id="media-list"></div>
-    </section>
+        <div class="file-input-wrapper">
+          <input 
+            type="file" 
+            id="file-input" 
+            accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/x-msvideo"
+            multiple
+            style="display: none;">
+        </div>
+
+        <!-- Nombre del archivo seleccionado -->
+        <div id="file-selected-container" class="file-selected-container" style="display: none;">
+          <h4>Archivo seleccionado</h4>
+          <div class="selected-files" id="selected-files"></div>
+          
+          <!-- Preview para imágenes -->
+          <div id="preview-container" class="preview-container"></div>
+        </div>
+
+        <!-- Barra de progreso -->
+        <div id="progress-container" class="progress-container" style="display: none;">
+          <div class="progress-label">
+            <span id="progress-text">Subiendo...</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Mensaje de validación -->
+        <div id="validation-message" class="validation-message" style="display: none;"></div>
+
+        <!-- Botones de acción -->
+        <div class="button-group">
+          <button id="upload-btn" class="btn btn-primary">
+            <span class="btn-icon">⬆️</span> Subir archivo(s)
+          </button>
+          <button id="cancel-btn" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Tarjeta de listado -->
+      <div class="card files-card">
+        <h2 class="card-title">Archivos cargados</h2>
+        
+        <div class="media-list-container">
+          <div class="media-list" id="media-list"></div>
+          <div id="empty-state" class="empty-state">
+            <p>📭 No hay archivos cargados aún</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta de estado -->
+      <div class="card status-card">
+        <h2 class="card-title">Estado de Divisas</h2>
+        <div class="status-info">
+          <div class="status-item">
+            <span class="status-label">Última actualización:</span>
+            <span class="status-value" id="last-update">-</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Total de archivos:</span>
+            <span class="status-value" id="file-count">0</span>
+          </div>
+          <div class="status-item">
+            <span class="status-label">Estado:</span>
+            <span class="status-value status-online">En línea</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <script src="script.js"></script>
