@@ -145,6 +145,7 @@ class DivisaPresentacion {
   if (this.mediaVideo) {
     this.mediaVideo.classList.remove('media-visible');
     this.mediaVideo.style.display = 'none';
+    this.mediaVideo.onended = null;
   }
 
   if (isVideo && this.mediaVideo) {
@@ -155,7 +156,12 @@ class DivisaPresentacion {
     void this.mediaVideo.offsetWidth;
     this.mediaVideo.classList.add('media-visible');
 
-    if (this.isPlaying) this.mediaVideo.play();
+      if (this.isPlaying) this.mediaVideo.play();
+
+      // Al terminar, asegurarnos de que no vuelva a reproducir automáticamente
+      this.mediaVideo.onended = () => {
+        try { this.mediaVideo.pause(); } catch (e) { /* no-op */ }
+      };
   } else if (this.mediaImg) {
     this.mediaImg.src = `/uploads/${file}`;
     this.mediaImg.style.display = 'block';
