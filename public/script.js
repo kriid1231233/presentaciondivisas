@@ -8,6 +8,7 @@ class DivisaPresentacion {
     // Auto-slide
     this.autoSlideInterval = null;
     this.autoSlideMs = 10000; // 10 segundos
+    this.autoSlideTimer = null; // timer para avanzar por imagen
 
     // Divisas
     this.lastValues = {};
@@ -158,9 +159,9 @@ class DivisaPresentacion {
 
       if (this.isPlaying) this.mediaVideo.play();
 
-      // Al terminar, asegurarnos de que no vuelva a reproducir automáticamente
+      // Al terminar, pasar al siguiente medio (loop en la lista)
       this.mediaVideo.onended = () => {
-        try { this.mediaVideo.pause(); } catch (e) { /* no-op */ }
+        this.nextMedia();
       };
   } else if (this.mediaImg) {
     this.mediaImg.src = `/uploads/${file}`;
@@ -168,8 +169,26 @@ class DivisaPresentacion {
 
     void this.mediaImg.offsetWidth;
     this.mediaImg.classList.add('media-visible');
+    // Para imágenes, avanzar automáticamente después de `autoSlideMs`
+    this.clearAutoAdvance();
+    this.autoSlideTimer = setTimeout(() => this.nextMedia(), this.autoSlideMs);
   }
 }
+
+  // Avanza al siguiente medio y mantiene looping
+  nextMedia() {
+    this.clearAutoAdvance();
+    if (!this.mediaFiles || this.mediaFiles.length === 0) return;
+    const nextIndex = (this.currentMediaIndex + 1) % this.mediaFiles.length;
+    this.showMedia(nextIndex);
+  }
+
+  clearAutoAdvance() {
+    if (this.autoSlideTimer) {
+      clearTimeout(this.autoSlideTimer);
+      this.autoSlideTimer = null;
+    }
+  }
 
 
 
