@@ -1,17 +1,18 @@
+require('dotenv').config(); // opcional: para desarrollo local si tienes .env
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-
+const pool = require('./db');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.static('public'));
 app.use('/uploads', express.static('uploads'));
-
+require('dotenv').config(); // opcional: para desarrollo local si tienes .env
 // Configuración multer para subida de archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'uploads/'),
@@ -30,6 +31,17 @@ app.get('/api/media', (req, res) => {
       file.match(/\.(jpg|jpeg|png|gif|mp4|webm|avi)$/i)
     );
     res.json(mediaFiles);
+
+// Endpoint de prueba para verificar la conexión a la base de datos
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW() AS now');
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('DB test error:', err);
+    res.status(500).json({ error: 'DB error' });
+  }
+});
   });
 });
 
@@ -63,4 +75,13 @@ app.post('/api/media', upload.array('files'), (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW() AS now');
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'DB error' });
+  }
 });
