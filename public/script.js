@@ -165,16 +165,6 @@ class DivisaPresentacion {
   }
 }
 
-  // Auto-slide
-  startAutoSlide() {
-    if (this.autoSlideInterval) return;
-
-    this.autoSlideInterval = setInterval(() => {
-      if (this.isPlaying && this.mediaFiles && this.mediaFiles.length > 0) {
-        this.showMedia(this.currentMediaIndex + 1);
-      }
-    }, this.autoSlideMs);
-  }
 
   stopAutoSlide() {
     if (this.autoSlideInterval) {
