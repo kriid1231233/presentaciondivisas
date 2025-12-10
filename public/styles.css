@@ -150,10 +150,52 @@ body {
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .controles-presentacion button:hover {
   background: #00c696;
+  border-color: #00c696;
+}
+
+.fullscreen-btn {
+  padding: 10px 12px !important;
+  background: rgba(1, 226, 168, 0.9) !important;
+}
+
+.fullscreen-btn:hover {
+  background: #00c696 !important;
+}
+
+.fullscreen-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+}
+
+/* Estado fullscreen */
+.presentacion-layout:fullscreen {
+  width: 100vw;
+  height: 100vh;
+}
+
+.presentacion-layout:fullscreen .presentacion-container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.presentacion-layout:fullscreen .media-player {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.presentacion-layout:fullscreen .divisas-overlay {
+  height: 18vh;
+  min-height: 120px;
 }
 
 /* Responsive */

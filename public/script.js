@@ -52,6 +52,41 @@ class DivisaPresentacion {
     if (this.uploadBtn && this.fileInput) {
       this.uploadBtn.onclick = () => this.uploadFiles();
     }
+
+    // Fullscreen personalizado (index.html)
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener('click', () => this.toggleFullscreen());
+    }
+  }
+
+  toggleFullscreen() {
+    const layout = document.getElementById('presentacion-layout');
+    if (!layout) return;
+
+    if (!document.fullscreenElement) {
+      // Entrar en fullscreen
+      if (layout.requestFullscreen) {
+        layout.requestFullscreen().catch(err => {
+          console.error(`Error al entrar en fullscreen: ${err.message}`);
+        });
+      } else if (layout.webkitRequestFullscreen) {
+        layout.webkitRequestFullscreen();
+      } else if (layout.msRequestFullscreen) {
+        layout.msRequestFullscreen();
+      }
+    } else {
+      // Salir de fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(err => {
+          console.error(`Error al salir de fullscreen: ${err.message}`);
+        });
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
   }
 
   // -------------------- Multimedia --------------------
