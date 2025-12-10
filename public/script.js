@@ -166,12 +166,6 @@ class DivisaPresentacion {
 }
 
 
-  stopAutoSlide() {
-    if (this.autoSlideInterval) {
-      clearInterval(this.autoSlideInterval);
-      this.autoSlideInterval = null;
-    }
-  }
 
   // Subida de archivos (solo admin.html)
   async uploadFiles(files = null) {
