@@ -326,13 +326,15 @@ class DivisaPresentacion {
 
     this.mediaList.innerHTML = '';
     this.mediaFiles.forEach((file, index) => {
-      const isVideo = /\.(mp4|webm|avi)$/i.test(file);
+      // file is an object from the server: { filename, original_name, mime_type, size, uploaded_at }
+      const name = file.original_name || file.filename;
+      const isVideo = /video/i.test(file.mime_type || '') || /\.(mp4|webm|avi)$/i.test(file.filename || '');
       const fileType = isVideo ? 'VIDEO' : 'IMAGEN';
-      
+
       const item = document.createElement('div');
       item.className = 'media-item';
       item.innerHTML = `
-        <span class="media-name">${file}</span>
+        <span class="media-name">${name}</span>
         <span class="media-type">${fileType}</span>
         <button class="delete-btn" data-index="${index}">Eliminar</button>
       `;
@@ -358,10 +360,10 @@ class DivisaPresentacion {
 
   async deleteMedia(index) {
     if (!this.mediaFiles || !this.mediaFiles[index]) return;
-    const filename = this.mediaFiles[index];
+    const filename = this.mediaFiles[index].filename || this.mediaFiles[index];
 
     try {
-      const resp = await fetch(`/api/media/${filename}`, { method: 'DELETE' });
+      const resp = await fetch(`/api/media/${encodeURIComponent(filename)}`, { method: 'DELETE' });
       if (!resp.ok) {
         console.error('Error HTTP al eliminar:', resp.status);
         alert('Error al eliminar archivo.');
@@ -394,7 +396,10 @@ class DivisaPresentacion {
     ((index % this.mediaFiles.length) + this.mediaFiles.length) % this.mediaFiles.length;
 
   const file = this.mediaFiles[this.currentMediaIndex];
-  const isVideo = /\.(mp4|webm|avi)$/i.test(file);
+  // file may be an object from the server
+  const filename = file.filename || file;
+  const mime = file.mime_type || '';
+  const isVideo = /video/i.test(mime) || /\.(mp4|webm|avi)$/i.test(filename);
 
   // limpiar visibilidad previa
   if (this.mediaImg) {
@@ -408,7 +413,7 @@ class DivisaPresentacion {
   }
 
   if (isVideo && this.mediaVideo) {
-    this.mediaVideo.src = `/uploads/${file}`;
+    this.mediaVideo.src = `/uploads/${filename}`;
     this.mediaVideo.style.display = 'block';
 
     // forzar reflow para que la transición se aplique bien
@@ -422,7 +427,7 @@ class DivisaPresentacion {
         this.nextMedia();
       };
   } else if (this.mediaImg) {
-    this.mediaImg.src = `/uploads/${file}`;
+    this.mediaImg.src = `/uploads/${filename}`;
     this.mediaImg.style.display = 'block';
 
     void this.mediaImg.offsetWidth;
@@ -450,39 +455,7 @@ class DivisaPresentacion {
 
 
 
-  // Subida de archivos (solo admin.html)
-  async uploadFiles(files = null) {
-    if (!this.fileInput) return; // no hay panel admin
 
-    const formData = new FormData();
-    const toUpload = files ? files : Array.from(this.fileInput.files);
-
-    if (toUpload.length === 0) {
-      alert('Primero selecciona al menos un archivo.');
-      return;
-    }
-
-    toUpload.forEach(file => formData.append('files', file));
-
-    try {
-      const resp = await fetch('/api/media', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!resp.ok) {
-        console.error('Error HTTP al subir:', resp.status);
-        alert('Error al subir archivos.');
-        return;
-      }
-
-      await this.loadMedia();  // recarga lista y carrusel
-      this.fileInput.value = '';
-    } catch (error) {
-      console.error('Error subiendo:', error);
-      alert('Error al subir archivos (revisa la consola).');
-    }
-  }
 
   // -------------------- Divisas + fecha/hora --------------------
 
